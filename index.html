@@ -532,4 +532,36 @@ function exportPDF() {
   const c = document.getElementById('reportContent');
   if (c.innerHTML.includes('Cliquez')) { alert('Générez d\'abord un rapport.'); return; }
   const w = window.open('', '_blank');
-  w
+  w.document.write('<html><head><title>Rapport</title><style>body{font-family:Arial;padding:40px;}</style></head><body>');
+  w.document.write(c.innerHTML);
+  w.document.write('</body></html>');
+  w.document.close();
+  w.print();
+}
+
+function loadAll() {
+  loadGly();
+  loadMeal();
+  loadAct();
+  loadWeight();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const session = sessionStorage.getItem('diabeteai_session');
+  if (session) {
+    const users = getUsers();
+    if (users[session]) {
+      currentUser = { email: session, name: users[session].name };
+      showApp();
+      return;
+    }
+  }
+  document.getElementById('authPage').classList.remove('hidden');
+  document.getElementById('appPage').classList.add('hidden');
+  document.getElementById('loginContainer').classList.remove('hidden');
+  document.getElementById('signupContainer').classList.add('hidden');
+});
+</script>
+
+</body>
+</html>
