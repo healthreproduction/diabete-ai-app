@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DiabèteAI</title>
+<title>DiabèteAI - Application</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: Arial, sans-serif; background: #f0f4f8; color: #1a1a1a; line-height: 1.6; }
@@ -37,10 +37,9 @@ body { font-family: Arial, sans-serif; background: #f0f4f8; color: #1a1a1a; line
 .app-header { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
 .app-header h1 { font-size: 1.3rem; color: #0a2540; }
 .app-header h1 span { color: #0066cc; }
-.btn-back { background: #6c757d; color: white; border: none; border-radius: 8px; padding: 6px 16px; font-size: 0.85rem; cursor: pointer; text-decoration: none; }
 .btn-danger { padding: 6px 14px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
-.btn-success { padding: 10px 25px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
 .btn-small { padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+.btn-success { padding: 10px 25px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
 
 .app-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 15px 0; }
 .app-tab { padding: 10px 18px; background: #e9ecef; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
@@ -81,109 +80,73 @@ td { padding: 10px 12px; border-bottom: 1px solid #e9ecef; }
 .lang-btn { background: none; border: 2px solid #e9ecef; border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
 .lang-btn.active { border-color: #0066cc; background: #0066cc; color: white; }
 
-html[lang="ar"] { direction: rtl; }
-html[lang="ar"] .app-header { direction: ltr; }
-html[lang="ar"] .lang-selector { direction: ltr; }
-
 @media (max-width: 768px) {
   .form-row { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .app-header { flex-direction: column; gap: 10px; }
-  .app-tabs { justify-content: center; }
 }
 </style>
 </head>
 <body>
 
-<!-- ============ AUTHENTIFICATION ============ -->
+<!-- AUTHENTIFICATION -->
 <div id="authPage" class="auth-page">
 
-  <!-- FENÊTRE CONNEXION (visible par défaut) -->
   <div class="auth-container" id="loginContainer">
-    <div class="logo">
-      <h1>Diabète<span>AI</span></h1>
-      <p>Intelligence artificielle &amp; santé</p>
-    </div>
+    <div class="logo"><h1>Diabète<span>AI</span></h1><p>Intelligence artificielle &amp; santé</p></div>
     <h2>Connexion</h2>
     <p class="sub">Accédez à votre espace de suivi</p>
     <div id="loginAlert" class="alert"></div>
     <form onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="loginEmail" placeholder="exemple@email.com" required>
-      </div>
-      <div class="form-group">
-        <label>Mot de passe</label>
-        <input type="password" id="loginPassword" placeholder="••••••••" required>
-      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="exemple@email.com" required></div>
+      <div class="form-group"><label>Mot de passe</label><input type="password" id="loginPassword" placeholder="••••••••" required></div>
       <button type="submit" class="btn-primary">Se connecter</button>
     </form>
-    <div class="switch-link">
-      Pas encore de compte ? <a onclick="showSignup()">S'inscrire</a>
-    </div>
+    <div class="switch-link">Pas encore de compte ? <a onclick="showSignup()">S'inscrire</a></div>
   </div>
 
-  <!-- FENÊTRE INSCRIPTION (CACHÉE grâce à la classe hidden) -->
   <div class="auth-container hidden" id="signupContainer">
-    <div class="logo">
-      <h1>Diabète<span>AI</span></h1>
-      <p>Intelligence artificielle &amp; santé</p>
-    </div>
+    <div class="logo"><h1>Diabète<span>AI</span></h1><p>Intelligence artificielle &amp; santé</p></div>
     <h2>Inscription</h2>
     <p class="sub">Créez votre compte gratuitement</p>
     <div id="signupAlert" class="alert"></div>
     <form onsubmit="handleSignup(event)">
-      <div class="form-group">
-        <label>Nom complet</label>
-        <input type="text" id="signupName" placeholder="Votre nom" required>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signupEmail" placeholder="exemple@email.com" required>
-      </div>
-      <div class="form-group">
-        <label>Mot de passe (6 caractères min)</label>
-        <input type="password" id="signupPassword" placeholder="••••••••" minlength="6" required>
-      </div>
+      <div class="form-group"><label>Nom complet</label><input type="text" id="signupName" placeholder="Votre nom" required></div>
+      <div class="form-group"><label>Email</label><input type="email" id="signupEmail" placeholder="exemple@email.com" required></div>
+      <div class="form-group"><label>Mot de passe (6 caractères min)</label><input type="password" id="signupPassword" placeholder="••••••••" minlength="6" required></div>
       <button type="submit" class="btn-primary">Créer mon compte</button>
     </form>
-    <div class="switch-link">
-      Déjà un compte ? <a onclick="showLogin()">Se connecter</a>
-    </div>
+    <div class="switch-link">Déjà un compte ? <a onclick="showLogin()">Se connecter</a></div>
   </div>
 
 </div>
 
-<!-- ============ APPLICATION ============ -->
+<!-- APPLICATION -->
 <div id="appPage" class="hidden">
-
   <div class="app-header">
     <h1>Diabète<span>AI</span></h1>
     <div style="display:flex;align-items:center;gap:12px;">
-      <a href="/" class="btn-back">⬅ Retour</a>
       <span id="userNameDisplay" style="font-weight:600;"></span>
       <button class="btn-danger" onclick="logout()">Déconnexion</button>
     </div>
   </div>
 
   <div class="lang-selector">
-    <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">🇫🇷 FR</button>
-    <button class="lang-btn" data-lang="en" onclick="switchLang('en')">🇬🇧 EN</button>
-    <button class="lang-btn" data-lang="ar" onclick="switchLang('ar')">🇸🇦 AR</button>
+    <button class="lang-btn active" onclick="switchLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" onclick="switchLang('en')">🇬🇧 EN</button>
+    <button class="lang-btn" onclick="switchLang('ar')">🇸🇦 AR</button>
   </div>
 
   <div class="container" style="margin-top:15px;">
-
     <div class="app-tabs">
-      <button class="app-tab active" onclick="switchTab('glycemie', this)">🩸 <span class="t-fr">Glycémie</span><span class="t-en hidden">Glucose</span><span class="t-ar hidden">السكر</span></button>
-      <button class="app-tab" onclick="switchTab('repas', this)">🍽️ <span class="t-fr">Repas</span><span class="t-en hidden">Meals</span><span class="t-ar hidden">الوجبات</span></button>
-      <button class="app-tab" onclick="switchTab('activite', this)">🏃 <span class="t-fr">Activité</span><span class="t-en hidden">Activity</span><span class="t-ar hidden">النشاط</span></button>
-      <button class="app-tab" onclick="switchTab('poids', this)">⚖️ <span class="t-fr">Poids</span><span class="t-en hidden">Weight</span><span class="t-ar hidden">الوزن</span></button>
-      <button class="app-tab" onclick="switchTab('ia', this)">🤖 <span class="t-fr">Assistant IA</span><span class="t-en hidden">AI</span><span class="t-ar hidden">الذكاء</span></button>
-      <button class="app-tab" onclick="switchTab('rapports', this)">📊 <span class="t-fr">Rapports</span><span class="t-en hidden">Reports</span><span class="t-ar hidden">التقارير</span></button>
+      <button class="app-tab active" onclick="switchTab('glycemie', this)">🩸 Glycémie</button>
+      <button class="app-tab" onclick="switchTab('repas', this)">🍽️ Repas</button>
+      <button class="app-tab" onclick="switchTab('activite', this)">🏃 Activité</button>
+      <button class="app-tab" onclick="switchTab('poids', this)">⚖️ Poids</button>
+      <button class="app-tab" onclick="switchTab('ia', this)">🤖 Assistant IA</button>
+      <button class="app-tab" onclick="switchTab('rapports', this)">📊 Rapports</button>
     </div>
 
-    <!-- GLYCÉMIE -->
     <div class="tab-content active" id="tab-glycemie">
       <div class="stats-grid">
         <div class="stat-card"><div class="number" id="statCount">0</div><div class="label">Mesures</div></div>
@@ -197,24 +160,18 @@ html[lang="ar"] .lang-selector { direction: ltr; }
           <div class="form-group"><label>Valeur (g/L)</label><input type="number" id="glyVal" step="0.01" min="0.2" max="4" placeholder="1.20" required></div>
           <div class="form-group"><label>Date & heure</label><input type="datetime-local" id="glyDate" required></div>
           <div class="form-group"><label>Moment</label>
-            <select id="glyMoment">
-              <option>À jeun</option><option>Post-prandial</option><option>Avant repas</option><option>Avant coucher</option>
-            </select>
+            <select id="glyMoment"><option>À jeun</option><option>Post-prandial</option><option>Avant repas</option><option>Avant coucher</option></select>
           </div>
           <button type="submit" class="btn-primary">Enregistrer</button>
         </form>
       </div>
       <div class="card">
         <h2>📋 Historique</h2>
-        <table>
-          <thead><tr><th>Date</th><th>Moment</th><th>Valeur</th><th>Statut</th><th>Action</th></tr></thead>
-          <tbody id="glyBody"></tbody>
-        </table>
+        <table><thead><tr><th>Date</th><th>Moment</th><th>Valeur</th><th>Statut</th><th>Action</th></tr></thead><tbody id="glyBody"></tbody></table>
         <p id="glyEmpty" style="text-align:center;color:#6c757d;padding:20px 0;">Aucune mesure enregistrée.</p>
       </div>
     </div>
 
-    <!-- REPAS -->
     <div class="tab-content" id="tab-repas">
       <div class="card">
         <h2>🍽️ Ajouter un repas</h2>
@@ -227,23 +184,17 @@ html[lang="ar"] .lang-selector { direction: ltr; }
       </div>
       <div class="card">
         <h2>📋 Historique</h2>
-        <table>
-          <thead><tr><th>Date</th><th>Nom</th><th>Description</th><th>Action</th></tr></thead>
-          <tbody id="mealBody"></tbody>
-        </table>
+        <table><thead><tr><th>Date</th><th>Nom</th><th>Description</th><th>Action</th></tr></thead><tbody id="mealBody"></tbody></table>
         <p id="mealEmpty" style="text-align:center;color:#6c757d;padding:20px 0;">Aucun repas enregistré.</p>
       </div>
     </div>
 
-    <!-- ACTIVITÉ -->
     <div class="tab-content" id="tab-activite">
       <div class="card">
         <h2>🏃 Ajouter une activité</h2>
         <form class="form-row" onsubmit="addAct(event)">
           <div class="form-group"><label>Type</label>
-            <select id="actType">
-              <option>Marche</option><option>Course</option><option>Vélo</option><option>Natation</option><option>Musculation</option><option>Autre</option>
-            </select>
+            <select id="actType"><option>Marche</option><option>Course</option><option>Vélo</option><option>Natation</option><option>Musculation</option><option>Autre</option></select>
           </div>
           <div class="form-group"><label>Durée (min)</label><input type="number" id="actDur" min="1" max="300" placeholder="30" required></div>
           <div class="form-group"><label>Date</label><input type="datetime-local" id="actDate" required></div>
@@ -252,15 +203,11 @@ html[lang="ar"] .lang-selector { direction: ltr; }
       </div>
       <div class="card">
         <h2>📋 Historique</h2>
-        <table>
-          <thead><tr><th>Date</th><th>Type</th><th>Durée</th><th>Action</th></tr></thead>
-          <tbody id="actBody"></tbody>
-        </table>
+        <table><thead><tr><th>Date</th><th>Type</th><th>Durée</th><th>Action</th></tr></thead><tbody id="actBody"></tbody></table>
         <p id="actEmpty" style="text-align:center;color:#6c757d;padding:20px 0;">Aucune activité enregistrée.</p>
       </div>
     </div>
 
-    <!-- POIDS -->
     <div class="tab-content" id="tab-poids">
       <div class="card">
         <h2>⚖️ Enregistrer un poids</h2>
@@ -272,21 +219,15 @@ html[lang="ar"] .lang-selector { direction: ltr; }
       </div>
       <div class="card">
         <h2>📋 Historique</h2>
-        <table>
-          <thead><tr><th>Date</th><th>Poids</th><th>Action</th></tr></thead>
-          <tbody id="weightBody"></tbody>
-        </table>
+        <table><thead><tr><th>Date</th><th>Poids</th><th>Action</th></tr></thead><tbody id="weightBody"></tbody></table>
         <p id="weightEmpty" style="text-align:center;color:#6c757d;padding:20px 0;">Aucun poids enregistré.</p>
       </div>
     </div>
 
-    <!-- ASSISTANT IA -->
     <div class="tab-content" id="tab-ia">
       <div class="card">
         <h2>🤖 Assistant IA</h2>
-        <div class="chat-container" id="chatBox">
-          <div class="chat-message ai">👋 Bonjour ! Posez-moi des questions sur vos données.</div>
-        </div>
+        <div class="chat-container" id="chatBox"><div class="chat-message ai">👋 Bonjour ! Posez-moi des questions sur vos données.</div></div>
         <div class="chat-input-row">
           <input type="text" id="chatInput" placeholder="Ex: Quelle est ma moyenne ?" onkeypress="if(event.key==='Enter')sendChat()">
           <button class="btn-primary" onclick="sendChat()">Envoyer</button>
@@ -294,7 +235,6 @@ html[lang="ar"] .lang-selector { direction: ltr; }
       </div>
     </div>
 
-    <!-- RAPPORTS -->
     <div class="tab-content" id="tab-rapports">
       <div class="card">
         <h2>📊 Générer un rapport</h2>
@@ -305,24 +245,17 @@ html[lang="ar"] .lang-selector { direction: ltr; }
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <script>
-// ==================== LANGUE ====================
 let appLang = 'fr';
 function switchLang(lang) {
   appLang = lang;
-  document.querySelectorAll('.lang-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.lang === lang);
-  });
-  document.querySelectorAll('.t-fr, .t-en, .t-ar').forEach(el => el.classList.add('hidden'));
-  document.querySelectorAll('.t-' + lang).forEach(el => el.classList.remove('hidden'));
-  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
 }
 
-// ==================== NAVIGATION ====================
 function switchTab(tabId, btn) {
   document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -330,7 +263,6 @@ function switchTab(tabId, btn) {
   document.getElementById('tab-' + tabId).classList.add('active');
 }
 
-// ==================== AUTHENTIFICATION ====================
 function showSignup() {
   document.getElementById('loginContainer').classList.add('hidden');
   document.getElementById('signupContainer').classList.remove('hidden');
@@ -340,12 +272,8 @@ function showLogin() {
   document.getElementById('loginContainer').classList.remove('hidden');
 }
 
-function getUsers() {
-  return JSON.parse(localStorage.getItem('diabeteai_users') || '{}');
-}
-function saveUsers(u) {
-  localStorage.setItem('diabeteai_users', JSON.stringify(u));
-}
+function getUsers() { return JSON.parse(localStorage.getItem('diabeteai_users') || '{}'); }
+function saveUsers(u) { localStorage.setItem('diabeteai_users', JSON.stringify(u)); }
 function hash(pwd) {
   let h = 0;
   for (let i = 0; i < pwd.length; i++) { h = ((h << 5) - h) + pwd.charCodeAt(i); h |= 0; }
@@ -411,7 +339,6 @@ function showApp() {
   loadAll();
 }
 
-// ==================== DONNÉES ====================
 function getData(k) { return JSON.parse(localStorage.getItem('diabeteai_' + k + '_' + currentUser.email) || '[]'); }
 function saveData(k, d) { localStorage.setItem('diabeteai_' + k + '_' + currentUser.email, JSON.stringify(d)); }
 function fmtDate(dt) {
@@ -419,7 +346,6 @@ function fmtDate(dt) {
   return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
 }
 
-// ==================== GLYCÉMIE ====================
 function addGly(e) {
   e.preventDefault();
   const value = parseFloat(document.getElementById('glyVal').value);
@@ -447,7 +373,10 @@ function loadGly() {
   const empty = document.getElementById('glyEmpty');
   if (data.length === 0) {
     tbody.innerHTML = ''; empty.style.display = 'block';
-    ['statCount','statMoy','statMin','statMax'].forEach(id => document.getElementById(id).textContent = id === 'statCount' ? '0' : '-');
+    document.getElementById('statCount').textContent = '0';
+    document.getElementById('statMoy').textContent = '-';
+    document.getElementById('statMin').textContent = '-';
+    document.getElementById('statMax').textContent = '-';
     return;
   }
   empty.style.display = 'none';
@@ -465,7 +394,6 @@ function loadGly() {
   document.getElementById('statMax').textContent = Math.max(...vals).toFixed(2);
 }
 
-// ==================== REPAS ====================
 function addMeal(e) {
   e.preventDefault();
   const name = document.getElementById('mealName').value;
@@ -496,7 +424,6 @@ function loadMeal() {
   tbody.innerHTML = html;
 }
 
-// ==================== ACTIVITÉ ====================
 function addAct(e) {
   e.preventDefault();
   const type = document.getElementById('actType').value;
@@ -526,7 +453,6 @@ function loadAct() {
   tbody.innerHTML = html;
 }
 
-// ==================== POIDS ====================
 function addWeight(e) {
   e.preventDefault();
   const value = parseFloat(document.getElementById('weightVal').value);
@@ -555,7 +481,6 @@ function loadWeight() {
   tbody.innerHTML = html;
 }
 
-// ==================== ASSISTANT IA ====================
 function sendChat() {
   const input = document.getElementById('chatInput');
   const msg = input.value.trim();
@@ -587,7 +512,6 @@ function sendChat() {
   }, 600);
 }
 
-// ==================== RAPPORTS ====================
 function genReport() {
   const gly = getData('gly');
   const weight = getData('weight');
@@ -608,37 +532,4 @@ function exportPDF() {
   const c = document.getElementById('reportContent');
   if (c.innerHTML.includes('Cliquez')) { alert('Générez d\'abord un rapport.'); return; }
   const w = window.open('', '_blank');
-  w.document.write('<html><head><title>Rapport</title><style>body{font-family:Arial;padding:40px;}</style></head><body>');
-  w.document.write(c.innerHTML);
-  w.document.write('</body></html>');
-  w.document.close();
-  w.print();
-}
-
-// ==================== CHARGEMENT ====================
-function loadAll() {
-  loadGly();
-  loadMeal();
-  loadAct();
-  loadWeight();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const session = sessionStorage.getItem('diabeteai_session');
-  if (session) {
-    const users = getUsers();
-    if (users[session]) {
-      currentUser = { email: session, name: users[session].name };
-      showApp();
-      return;
-    }
-  }
-  document.getElementById('authPage').classList.remove('hidden');
-  document.getElementById('appPage').classList.add('hidden');
-  document.getElementById('loginContainer').classList.remove('hidden');
-  document.getElementById('signupContainer').classList.add('hidden');
-});
-</script>
-
-</body>
-</html>
+  w
