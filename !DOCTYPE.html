@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DiabèteAI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #f0f4f8; color: #1a1a1a; line-height: 1.6; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.hidden { display: none !important; }
+
+/* AUTHENTIFICATION */
+.auth-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #f0f7ff, #fff); padding: 20px; }
+.auth-container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 420px; width: 100%; }
+.auth-container .logo { text-align: center; margin-bottom: 25px; }
+.auth-container .logo h1 { font-size: 2rem; color: #0a2540; }
+.auth-container .logo h1 span { color: #0066cc; }
+.auth-container .logo p { color: #6c757d; font-size: 0.9rem; margin-top: 5px; }
+.auth-container h2 { text-align: center; font-size: 1.5rem; color: #0a2540; margin-bottom: 5px; }
+.auth-container .sub { text-align: center; color: #6c757d; margin-bottom: 20px; }
+.auth-container .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+.auth-container label { font-weight: 600; font-size: 0.85rem; color: #0a2540; }
+.auth-container input { padding: 10px 14px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; width: 100%; }
+.auth-container input:focus { outline: none; border-color: #0066cc; }
+.btn-primary { padding: 10px 25px; background: #0066cc; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+.btn-primary:hover { background: #004d99; }
+.auth-container .btn-primary { width: 100%; }
+.switch-link { text-align: center; margin-top: 15px; font-size: 0.9rem; color: #6c757d; }
+.switch-link a { color: #0066cc; text-decoration: none; font-weight: 600; cursor: pointer; }
+.alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; display: none; }
+.alert.visible { display: block; }
+.alert-error { background: #f8d7da; color: #721c24; }
+.alert-success { background: #d4edda; color: #155724; }
+
+/* APPLICATION */
+.app-header { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.app-header h1 { font-size: 1.3rem; color: #0a2540; }
+.app-header h1 span { color: #0066cc; }
+.btn-back { background: #6c757d; color: white; border: none; border-radius: 8px; padding: 6px 16px; font-size: 0.85rem; cursor: pointer; text-decoration: none; }
+.btn-danger { padding: 6px 14px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+.btn-success { padding: 10px 25px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+.btn-small { padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+
+.app-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 15px 0; }
+.app-tab { padding: 10px 18px; background: #e9ecef; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+.app-tab.active { background: #0066cc; color: white; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
+.card h2 { font-size: 1.3rem; color: #0a2540; margin-bottom: 1rem; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; align-items: end; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-weight: 600; font-size: 0.85rem; color: #0a2540; }
+.form-group input, .form-group select { padding: 10px 14px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; width: 100%; }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #0066cc; }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th { background: #f8f9fa; padding: 10px 12px; text-align: left; border-bottom: 2px solid #e9ecef; }
+td { padding: 10px 12px; border-bottom: 1px solid #e9ecef; }
+.gly-value { font-weight: 700; color: #0066cc; }
+.gly-high { color: #dc3545 !important; }
+.gly-low { color: #ffc107 !important; }
+.gly-normal { color: #28a745 !important; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+.stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; }
+.stat-card .number { font-size: 2rem; font-weight: 700; color: #0066cc; }
+.stat-card .label { font-size: 0.85rem; color: #6c757d; margin-top: 5px; }
+
+.chat-container { background: #f8f9fa; border-radius: 12px; padding: 20px; min-height: 150px; max-height: 250px; overflow-y: auto; }
+.chat-message { padding: 10px 15px; margin-bottom: 10px; border-radius: 12px; max-width: 80%; }
+.chat-message.user { background: #0066cc; color: white; margin-left: auto; }
+.chat-message.ai { background: #e9ecef; }
+.chat-input-row { display: flex; gap: 10px; margin-top: 15px; }
+.chat-input-row input { flex: 1; padding: 10px 14px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; }
+
+.lang-selector { display: flex; gap: 6px; align-items: center; justify-content: flex-end; padding: 6px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.lang-btn { background: none; border: 2px solid #e9ecef; border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+.lang-btn.active { border-color: #0066cc; background: #0066cc; color: white; }
+
+html[lang="ar"] { direction: rtl; }
+html[lang="ar"] .app-header { direction: ltr; }
+html[lang="ar"] .lang-selector { direction: ltr; }
+
+@media (max-width: 768px) {
+  .form-row { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .app-header { flex-direction: column; gap: 10px; }
+  .app-tabs { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ AUTHENTIFICATION ============ -->
+<div id="authPage" class="auth-page">
+
+  <!-- FENÊTRE CONNEXION (visible par défaut) -->
+  <div class="auth-container" id="loginContainer">
+    <div class="logo">
+      <h1>Diabète<span>AI</span></h1>
+      <p>Intelligence artificielle &amp; santé</p>
+    </div>
+    <h2>Connexion</h2>
+    <p class="sub">Accédez à votre espace de suivi</p>
+    <div id="loginAlert" class="alert"></div>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="exemple@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-primary">Se connecter</button>
+    </form>
+    <div class="switch-link">
+      Pas encore de compte ? <a onclick="showSignup()">S'inscrire</a>
+    </div>
+  </div>
+
+  <!-- FENÊTRE INSCRIPTION (CACHÉE grâce à la classe hidden) -->
+  <div class="auth-container hidden" id="signupContainer">
+    <div class="logo">
+      <h1>Diabète<span>AI</span></h1>
+      <p>Intelligence artificielle &amp; santé</p>
+    </div>
+    <h2>Inscription</h2>
+    <p class="sub">Créez votre compte gratuitement</p>
+    <div id="signupAlert" class="alert"></div>
+    <form onsubmit="handleSignup(event)">
+      <div class="form-group">
+        <label>Nom complet</label>
+        <input type="text" id="signupName" placeholder="Votre nom" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="exemple@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Mot de passe (6 caractères min)</label>
+        <input type="password" id="signupPassword" placeholder="••••••••" minlength="6" required>
+      </div>
+      <button type="submit" class="btn-primary">Créer mon compte</button>
+    </form>
+    <div class="switch-link">
+      Déjà un compte ? <a onclick="showLogin()">Se connecter</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ APPLICATION ============ -->
+<div id="appPage" class="hidden">
+
+  <div class="app-header">
+    <h1>Diabète<span>AI</span></h1>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="/" class="btn-back">⬅ Retour</a>
+      <span id="userNameDisplay" style="font-weight:600;"></span>
+      <button class="btn-danger" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="lang-selector">
+    <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" data-lang="en" onclick="switchLang('en')">🇬🇧 EN</button>
+    <button class="lang-btn" data-lang="ar" onclick="switchLang('ar')">🇸🇦 AR</button>
+  </div>
+
+  <div class="container" style="margin-top:15px;">
+
+    <div class="app-tabs">
+      <button class="app-tab active" onclick="switchTab('glycemie', this)">🩸 <span class="t-fr">Glycémie</span><span class="t-en hidden">Glucose</span><span class="t-ar hidden">السكر</span></button>
+      <button class="app-tab" onclick="switchTab('repas', this)">🍽️ <span class="t-fr">Repas</span><span class="t-en hidden">Meals</span><span class="t-ar hidden">الوجبات</span></button>
+      <button class="app-tab" onclick="switchTab('activite', this)">🏃 <span class="t-fr">Activité</span><span class="t-en hidden">Activity</span><span class="t-ar hidden">النشاط</span></button>
+      <button class="app-tab" onclick="switchTab('poids', this)">⚖️ <span class="t-fr">Poids</span><span class="t-en hidden">Weight</span><span class="t-ar hidden">الوزن</span></button>
+      <button class="app-tab" onclick="switchTab('ia', this)">🤖 <span class="t-fr">Assistant IA</span><span class="t-en hidden">AI</span><span class="t-ar hidden">الذكاء</span></button>
+      <button class="app-tab" onclick="switchTab('rapports', this)">📊 <span class="t-fr">Rapports</span><span class="t-en hidden">Reports</span><span class="t-ar hidden">التقارير</span></button>
+    </div>
+
+    <!-- GLYCÉMIE -->
+    <div class="tab-content active" id="tab-glycemie">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="number" id="statCount">0</div><div class="label">Mesures</div></div>
+        <div class="stat-card"><div class="number" id="statMoy">-</div><div class="label">Moyenne (g/L)</div></div>
+        <div class="stat-card"><div class="number" id="statMin">-</div><div class="label">Minimum</div></div>
+        <div class="stat-card"><div class="number" id="statMax">-</div><div class="label">Maximum</div></div>
+      </div>
+      <div class="card">
+        <h2>➕ Ajouter une mesure</h2>
+        <form class="form-row" onsubmit="addGly(event)">
+          <div class="form-group"><label>Valeur (g/L)</label><input type="number" id="glyVal" step="0.01" min="0.2" max="4" placeholder="1.20" required></div>
+          <div class="form-group"><label>Date & heure</label><input type="datetime-local" id="glyDate" required></div>
+          <div class="form-group"><label>Moment</label>
+            <select id="glyMoment">
+              <option>À jeun</option><option>Post-prandial</option><option>Avant repas</option><option>Avant coucher</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary">Enregistrer</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>📋 Historique</h2>
+        <table>
+          <thead><tr><th>Date</th><th>Moment</th><th>Valeur</th><th>Statut</th><th>Action</th></tr></thead>
+          <tbody id="glyBody"></tbody>
+        </table>
+        <p id="glyEmpty" style="text-align:center;color:#6c757d;padding:20px 0;">Aucune mesure enregistrée.</p>
+      </div>
+    </div>
+
+    <!-- REPAS -->
+    <div class="tab-content" id="tab-repas">
+      <div class="card">
+        <h2>🍽️ Ajouter un repas</h2>
+        <form class="form-row" onsubmit="addMeal(event)">
+          <div class="form-group"><label>Nom du repas</label><input type="text" id="mealName" placeholder="Ex: Petit-déjeuner" required></div>
+          <div class="form-group"><label>Date & heure</label><input type="datetime-local" id="mealDate" required></div>
+          <div class="form-group"><label>Description</label><input type="text" id="mealDesc" placeholder="Ex: 2 tartines"></div>
+          <button type="submit" class="btn-primary">Enregistrer</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>📋 Historique</h2>
+        <table>
+          <thead><tr><th>Date</th><th>Nom</th><th>Description</th><th>Action</th></tr></thead>
+          <tbody id="mealBody"></tbody>
+        </table>
+        <p id="mealEmpty" style="text-align:center;color:#6c757d;padding:20px 0;">Aucun repas enregistré.</p>
+      </div>
+    </div>
+
+    <!-- ACTIVITÉ -->
+    <div class="tab-content" id="tab-activite">
+      <div class="card">
+        <h2>🏃 Ajouter une activité</h2>
+        <form class="form-row" onsubmit="addAct(event)">
+          <div class="form-group"><label>Type</label>
+            <select id="actType">
+              <option>Marche</option><option>Course</option><option>Vélo</option><option>Natation</option><option>Musculation</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Durée (min)</label><input type="number" id="actDur" min="1" max="300" placeholder="30" required></div>
+          <div class="form-group"><label>Date</label><input type="datetime-local" id="actDate" required></div>
+          <button type="submit" class="btn-primary">Enregistrer</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>📋 Historique</h2>
+        <table>
+          <thead><tr><th>Date</th><th>Type</th><th>Durée</th><th>Action</th></tr></thead>
+          <tbody id="actBody"></tbody>
+        </table>
+        <p id="actEmpty" style="text-align:center;color:#6c757d;padding:20px 0;">Aucune activité enregistrée.</p>
+      </div>
+    </div>
+
+    <!-- POIDS -->
+    <div class="tab-content" id="tab-poids">
+      <div class="card">
+        <h2>⚖️ Enregistrer un poids</h2>
+        <form class="form-row" onsubmit="addWeight(event)">
+          <div class="form-group"><label>Poids (kg)</label><input type="number" id="weightVal" step="0.1" min="30" max="300" placeholder="70.5" required></div>
+          <div class="form-group"><label>Date</label><input type="datetime-local" id="weightDate" required></div>
+          <button type="submit" class="btn-primary">Enregistrer</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>📋 Historique</h2>
+        <table>
+          <thead><tr><th>Date</th><th>Poids</th><th>Action</th></tr></thead>
+          <tbody id="weightBody"></tbody>
+        </table>
+        <p id="weightEmpty" style="text-align:center;color:#6c757d;padding:20px 0;">Aucun poids enregistré.</p>
+      </div>
+    </div>
+
+    <!-- ASSISTANT IA -->
+    <div class="tab-content" id="tab-ia">
+      <div class="card">
+        <h2>🤖 Assistant IA</h2>
+        <div class="chat-container" id="chatBox">
+          <div class="chat-message ai">👋 Bonjour ! Posez-moi des questions sur vos données.</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Ex: Quelle est ma moyenne ?" onkeypress="if(event.key==='Enter')sendChat()">
+          <button class="btn-primary" onclick="sendChat()">Envoyer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RAPPORTS -->
+    <div class="tab-content" id="tab-rapports">
+      <div class="card">
+        <h2>📊 Générer un rapport</h2>
+        <button class="btn-success" onclick="genReport()">📄 Générer</button>
+        <button class="btn-primary" onclick="exportPDF()" style="background:#dc3545;">📥 PDF</button>
+        <div id="reportContent" style="margin-top:20px;padding:20px;background:#f8f9fa;border-radius:12px;min-height:100px;">
+          <p style="color:#6c757d;">Cliquez pour générer un rapport.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ==================== LANGUE ====================
+let appLang = 'fr';
+function switchLang(lang) {
+  appLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  document.querySelectorAll('.t-fr, .t-en, .t-ar').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.t-' + lang).forEach(el => el.classList.remove('hidden'));
+  document.documentElement.lang = lang;
+}
+
+// ==================== NAVIGATION ====================
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+}
+
+// ==================== AUTHENTIFICATION ====================
+function showSignup() {
+  document.getElementById('loginContainer').classList.add('hidden');
+  document.getElementById('signupContainer').classList.remove('hidden');
+}
+function showLogin() {
+  document.getElementById('signupContainer').classList.add('hidden');
+  document.getElementById('loginContainer').classList.remove('hidden');
+}
+
+function getUsers() {
+  return JSON.parse(localStorage.getItem('diabeteai_users') || '{}');
+}
+function saveUsers(u) {
+  localStorage.setItem('diabeteai_users', JSON.stringify(u));
+}
+function hash(pwd) {
+  let h = 0;
+  for (let i = 0; i < pwd.length; i++) { h = ((h << 5) - h) + pwd.charCodeAt(i); h |= 0; }
+  return 'h_' + Math.abs(h).toString(36);
+}
+
+let currentUser = null;
+
+function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pwd = document.getElementById('loginPassword').value.trim();
+  const alertEl = document.getElementById('loginAlert');
+  const users = getUsers();
+  if (users[email] && users[email].password === hash(pwd)) {
+    currentUser = { email, name: users[email].name };
+    sessionStorage.setItem('diabeteai_session', email);
+    showApp();
+  } else {
+    alertEl.textContent = 'Email ou mot de passe incorrect.';
+    alertEl.className = 'alert alert-error visible';
+  }
+}
+
+function handleSignup(e) {
+  e.preventDefault();
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+  const pwd = document.getElementById('signupPassword').value.trim();
+  const alertEl = document.getElementById('signupAlert');
+  const users = getUsers();
+  if (users[email]) {
+    alertEl.textContent = 'Cet email est déjà utilisé.';
+    alertEl.className = 'alert alert-error visible';
+    return;
+  }
+  users[email] = { name, password: hash(pwd) };
+  saveUsers(users);
+  alertEl.textContent = '✅ Compte créé ! Connectez-vous.';
+  alertEl.className = 'alert alert-success visible';
+  setTimeout(() => showLogin(), 1200);
+}
+
+function logout() {
+  if (confirm('Voulez-vous vous déconnecter ?')) {
+    sessionStorage.removeItem('diabeteai_session');
+    currentUser = null;
+    document.getElementById('appPage').classList.add('hidden');
+    document.getElementById('authPage').classList.remove('hidden');
+    showLogin();
+  }
+}
+
+function showApp() {
+  document.getElementById('authPage').classList.add('hidden');
+  document.getElementById('appPage').classList.remove('hidden');
+  document.getElementById('userNameDisplay').textContent = currentUser.name;
+  const now = new Date().toISOString().slice(0, 16);
+  document.getElementById('glyDate').value = now;
+  document.getElementById('mealDate').value = now;
+  document.getElementById('actDate').value = now;
+  document.getElementById('weightDate').value = now;
+  loadAll();
+}
+
+// ==================== DONNÉES ====================
+function getData(k) { return JSON.parse(localStorage.getItem('diabeteai_' + k + '_' + currentUser.email) || '[]'); }
+function saveData(k, d) { localStorage.setItem('diabeteai_' + k + '_' + currentUser.email, JSON.stringify(d)); }
+function fmtDate(dt) {
+  const d = new Date(dt);
+  return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+}
+
+// ==================== GLYCÉMIE ====================
+function addGly(e) {
+  e.preventDefault();
+  const value = parseFloat(document.getElementById('glyVal').value);
+  const date = document.getElementById('glyDate').value;
+  const moment = document.getElementById('glyMoment').value;
+  const data = getData('gly');
+  data.push({ id: Date.now(), value, date, moment, fmt: fmtDate(date) });
+  saveData('gly', data);
+  document.getElementById('glyVal').value = '';
+  loadGly();
+}
+function delGly(id) {
+  if (!confirm('Supprimer ?')) return;
+  saveData('gly', getData('gly').filter(i => i.id !== id));
+  loadGly();
+}
+function glyStatus(v) {
+  if (v < 0.7) return { txt: '⚠️ Bas', color: '#ffc107' };
+  if (v > 1.1) return { txt: '⚠️ Élevé', color: '#dc3545' };
+  return { txt: '✅ Normal', color: '#28a745' };
+}
+function loadGly() {
+  const data = getData('gly').sort((a,b) => new Date(b.date) - new Date(a.date));
+  const tbody = document.getElementById('glyBody');
+  const empty = document.getElementById('glyEmpty');
+  if (data.length === 0) {
+    tbody.innerHTML = ''; empty.style.display = 'block';
+    ['statCount','statMoy','statMin','statMax'].forEach(id => document.getElementById(id).textContent = id === 'statCount' ? '0' : '-');
+    return;
+  }
+  empty.style.display = 'none';
+  let html = '';
+  data.forEach(item => {
+    const s = glyStatus(item.value);
+    const cls = s.color === '#dc3545' ? 'gly-high' : (s.color === '#ffc107' ? 'gly-low' : 'gly-normal');
+    html += `<tr><td>${item.fmt}</td><td>${item.moment}</td><td class="gly-value ${cls}">${item.value.toFixed(2)}</td><td style="color:${s.color};font-weight:600;">${s.txt}</td><td><button class="btn-small" onclick="delGly(${item.id})">Supprimer</button></td></tr>`;
+  });
+  tbody.innerHTML = html;
+  const vals = data.map(d => d.value);
+  document.getElementById('statCount').textContent = data.length;
+  document.getElementById('statMoy').textContent = (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(2);
+  document.getElementById('statMin').textContent = Math.min(...vals).toFixed(2);
+  document.getElementById('statMax').textContent = Math.max(...vals).toFixed(2);
+}
+
+// ==================== REPAS ====================
+function addMeal(e) {
+  e.preventDefault();
+  const name = document.getElementById('mealName').value;
+  const date = document.getElementById('mealDate').value;
+  const desc = document.getElementById('mealDesc').value;
+  const data = getData('meal');
+  data.push({ id: Date.now(), name, date, desc, fmt: fmtDate(date) });
+  saveData('meal', data);
+  document.getElementById('mealName').value = '';
+  document.getElementById('mealDesc').value = '';
+  loadMeal();
+}
+function delMeal(id) {
+  if (!confirm('Supprimer ?')) return;
+  saveData('meal', getData('meal').filter(i => i.id !== id));
+  loadMeal();
+}
+function loadMeal() {
+  const data = getData('meal').sort((a,b) => new Date(b.date) - new Date(a.date));
+  const tbody = document.getElementById('mealBody');
+  const empty = document.getElementById('mealEmpty');
+  if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  let html = '';
+  data.forEach(item => {
+    html += `<tr><td>${item.fmt}</td><td>${item.name}</td><td>${item.desc || '-'}</td><td><button class="btn-small" onclick="delMeal(${item.id})">Supprimer</button></td></tr>`;
+  });
+  tbody.innerHTML = html;
+}
+
+// ==================== ACTIVITÉ ====================
+function addAct(e) {
+  e.preventDefault();
+  const type = document.getElementById('actType').value;
+  const duration = parseInt(document.getElementById('actDur').value);
+  const date = document.getElementById('actDate').value;
+  const data = getData('act');
+  data.push({ id: Date.now(), type, duration, date, fmt: fmtDate(date) });
+  saveData('act', data);
+  document.getElementById('actDur').value = '';
+  loadAct();
+}
+function delAct(id) {
+  if (!confirm('Supprimer ?')) return;
+  saveData('act', getData('act').filter(i => i.id !== id));
+  loadAct();
+}
+function loadAct() {
+  const data = getData('act').sort((a,b) => new Date(b.date) - new Date(a.date));
+  const tbody = document.getElementById('actBody');
+  const empty = document.getElementById('actEmpty');
+  if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  let html = '';
+  data.forEach(item => {
+    html += `<tr><td>${item.fmt}</td><td>${item.type}</td><td>${item.duration} min</td><td><button class="btn-small" onclick="delAct(${item.id})">Supprimer</button></td></tr>`;
+  });
+  tbody.innerHTML = html;
+}
+
+// ==================== POIDS ====================
+function addWeight(e) {
+  e.preventDefault();
+  const value = parseFloat(document.getElementById('weightVal').value);
+  const date = document.getElementById('weightDate').value;
+  const data = getData('weight');
+  data.push({ id: Date.now(), value, date, fmt: fmtDate(date) });
+  saveData('weight', data);
+  document.getElementById('weightVal').value = '';
+  loadWeight();
+}
+function delWeight(id) {
+  if (!confirm('Supprimer ?')) return;
+  saveData('weight', getData('weight').filter(i => i.id !== id));
+  loadWeight();
+}
+function loadWeight() {
+  const data = getData('weight').sort((a,b) => new Date(b.date) - new Date(a.date));
+  const tbody = document.getElementById('weightBody');
+  const empty = document.getElementById('weightEmpty');
+  if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  let html = '';
+  data.forEach(item => {
+    html += `<tr><td>${item.fmt}</td><td>${item.value.toFixed(1)} kg</td><td><button class="btn-small" onclick="delWeight(${item.id})">Supprimer</button></td></tr>`;
+  });
+  tbody.innerHTML = html;
+}
+
+// ==================== ASSISTANT IA ====================
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const box = document.getElementById('chatBox');
+  box.innerHTML += `<div class="chat-message user">${msg}</div>`;
+  input.value = '';
+  box.scrollTop = box.scrollHeight;
+  setTimeout(() => {
+    const gly = getData('gly');
+    const weight = getData('weight');
+    const q = msg.toLowerCase();
+    let resp = '';
+    if (q.includes('moyenne') || q.includes('average')) {
+      if (gly.length === 0) resp = '📊 Pas encore de données.';
+      else {
+        const vals = gly.map(d => d.value);
+        const avg = (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(2);
+        resp = `📊 Votre moyenne est ${avg} g/L sur ${gly.length} mesures.`;
+      }
+    } else if (q.includes('poids') || q.includes('weight')) {
+      if (weight.length === 0) resp = '⚖️ Aucun poids enregistré.';
+      else resp = `⚖️ Dernier poids: ${weight[weight.length-1].value.toFixed(1)} kg.`;
+    } else {
+      resp = '🤖 Posez-moi des questions sur : glycémie, repas, activité ou poids.';
+    }
+    box.innerHTML += `<div class="chat-message ai">${resp}</div>`;
+    box.scrollTop = box.scrollHeight;
+  }, 600);
+}
+
+// ==================== RAPPORTS ====================
+function genReport() {
+  const gly = getData('gly');
+  const weight = getData('weight');
+  const meal = getData('meal');
+  const act = getData('act');
+  let html = `<div style="background:white;padding:20px;border-radius:12px;">`;
+  html += `<h3 style="text-align:center;color:#0a2540;">📊 Rapport DiabèteAI</h3>`;
+  html += `<p style="text-align:center;color:#6c757d;">${new Date().toLocaleDateString('fr-FR')}</p><hr>`;
+  html += `<ul style="list-style:none;padding:0;">`;
+  html += `<li>🩸 Glycémie: ${gly.length} mesures</li>`;
+  html += `<li>⚖️ Poids: ${weight.length} enregistrements</li>`;
+  html += `<li>🍽️ Repas: ${meal.length}</li>`;
+  html += `<li>🏃 Activités: ${act.length}</li>`;
+  html += `</ul></div>`;
+  document.getElementById('reportContent').innerHTML = html;
+}
+function exportPDF() {
+  const c = document.getElementById('reportContent');
+  if (c.innerHTML.includes('Cliquez')) { alert('Générez d\'abord un rapport.'); return; }
+  const w = window.open('', '_blank');
+  w.document.write('<html><head><title>Rapport</title><style>body{font-family:Arial;padding:40px;}</style></head><body>');
+  w.document.write(c.innerHTML);
+  w.document.write('</body></html>');
+  w.document.close();
+  w.print();
+}
+
+// ==================== CHARGEMENT ====================
+function loadAll() {
+  loadGly();
+  loadMeal();
+  loadAct();
+  loadWeight();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const session = sessionStorage.getItem('diabeteai_session');
+  if (session) {
+    const users = getUsers();
+    if (users[session]) {
+      currentUser = { email: session, name: users[session].name };
+      showApp();
+      return;
+    }
+  }
+  document.getElementById('authPage').classList.remove('hidden');
+  document.getElementById('appPage').classList.add('hidden');
+  document.getElementById('loginContainer').classList.remove('hidden');
+  document.getElementById('signupContainer').classList.add('hidden');
+});
+</script>
+
+</body>
+</html>
